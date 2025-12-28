@@ -1,0 +1,8 @@
+uz:
+  start_message: Salom! Iltimos, tilni tanlang:
+
+en:
+  start_message: Hello! Please choose a language:
+
+ru:
+  start_message: Привет! Пожалуйста, выберите язык:
