@@ -66,19 +66,18 @@ async def handle_job_vacancies(message: Message, state: FSMContext, bot: Bot):
     except Exception as e:
         await bot.send_message(chat_id=admin_id[0], text=str(e))
 
-@router.message(ButtonTextFilter('survey'))
+@router.message(ButtonTextFilter('survey'), UserStates.info)
 async def handle_info(message: Message, state: FSMContext, bot: Bot):
     try:
         user_id = message.from_user.id
         language = await get_user_language(user_id)
         await message.answer(get_translation('first_name', language), reply_markup=get_back_button(language), parse_mode="html")
         await state.set_state(UserStates.first_name)
-        await state.set_state(UserStates.first_name.state)
+        await set_user_state(user_id, UserStates.first_name.state)
     except Exception as e:
         await bot.send_message(chat_id=admin_id[0], text=str(e))
 
-
-@router.message(ButtonTextFilter('back'), StateFilter(UserStates.info, UserStates.first_name))
+@router.message(ButtonTextFilter('back'), StateFilter(UserStates.info, UserStates.first_name, UserStates.last_name, UserStates.birth_date))
 async def handle_central_back(message: Message, state: FSMContext, bot: Bot):
     try:
         user_id = message.from_user.id
@@ -102,9 +101,30 @@ async def handle_central_back(message: Message, state: FSMContext, bot: Bot):
                 reply_markup=get_info_button(language),
                 parse_mode="html"
             )
+
+        async def go_to_first_name():
+            await state.set_state(UserStates.first_name)
+            await set_user_state(user_id, UserStates.first_name.state)
+            await message.answer(
+                get_translation('first_name', language),
+                reply_markup=get_back_button(language),
+                parse_mode="html"
+            )
+
+        async def go_to_last_name():
+            await state.set_state(UserStates.last_name)
+            await set_user_state(user_id, UserStates.last_name.state)
+            await message.answer(
+                get_translation('last_name', language),
+                reply_markup=get_back_button(),
+                parse_mode="html"
+            )
+
         state_actions = {
             UserStates.info: go_to_menu,
             UserStates.first_name: go_to_info,
+            UserStates.last_name: go_to_first_name,
+            UserStates.birth_date: go_to_last_name,
         }
         action = state_actions.get(current_state)
         if action:
@@ -112,6 +132,67 @@ async def handle_central_back(message: Message, state: FSMContext, bot: Bot):
         else:
             await message.answer("Unknown state. Please try again.")
 
+
+    except Exception as e:
+        await bot.send_message(chat_id=admin_id[0], text=str(e))
+
+
+@router.message(StateFilter(UserStates.first_name))
+async def handle_first_name(message: Message, state: FSMContext, bot: Bot):
+    try:
+        user_id = message.from_user.id
+        language = await get_user_language(user_id)
+        first_name = message.text.strip()
+
+        if len(first_name) > 50:
+            await message.reply(
+                get_translation('first_name_too_long', language),
+                reply_markup=get_back_button(language),
+                parse_mode="html"
+            )
+            return
+
+        if len(first_name) == 0:
+            await message.reply(
+                get_translation('first_name_empty', language),
+                reply_markup=get_back_button(language),
+                parse_mode="html"
+            )
+            return
+
+        await state.update_data(first_name=first_name)
+        await message.reply(
+            get_translation('last_name', language),
+            reply_markup=get_back_button(language),
+            parse_mode="html"
+        )
+        await state.set_state(UserStates.last_name)
+        await set_user_state(user_id, UserStates.last_name.state)
+    except Exception as e:
+        await bot.send_message(chat_id=admin_id[0], text=str(e))
+
+@router.message(StateFilter(UserStates.last_name))
+async def handle_message(message: Message, state: FSMContext, bot: Bot):
+    try:
+        user_id = message.from_user.id
+        language = await get_user_language(user_id)
+        last_name = message.text.strip()
+
+        if len(last_name) > 50:
+            await message.reply(get_translation('last_name_too_long', language),
+                                reply_markup=get_back_button(language),
+                                parse_mode="html")
+            return
+
+        if len(last_name) == 0:
+            await message.reply(get_translation('last_name_empty', language),
+                                reply_markup=get_back_button(language),
+                                parse_mode="html")
+
+        await state.set_state(UserStates.birth_date)
+        await message.reply(get_translation('birth_date', language),reply_markup=get_back_button(language),parse_mode="html")
+        await state.update_data(last_name=last_name)
+        await set_user_state(user_id, UserStates.birth_date.state)
 
     except Exception as e:
         await bot.send_message(chat_id=admin_id[0], text=str(e))
