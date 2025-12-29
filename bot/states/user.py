@@ -15,14 +15,14 @@ class UserStates(StatesGroup):
     birth_date = State()
     address = State()
     phone_number = State()
-    is_student = State()
+    is_student = State() #first half
     knowledge_level = State()
     gender = State()
     russian_level = State()
     russian_voice = State()
     english_level = State()
     english_voice = State()
-    ielts_certificate = State()
+    ielts_certificate = State() #last
     work_experience = State()
     last_workplace = State()
     photo = State()
