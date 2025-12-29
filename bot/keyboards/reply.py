@@ -40,3 +40,14 @@ def get_language_selection_keyboard() -> ReplyKeyboardMarkup:
     )
     return keyboard
 
+def get_info_button(language: str = 'uz') -> ReplyKeyboardMarkup:
+    """Get info button"""
+    keyboard = ReplyKeyboardMarkup(
+        keyboard=[
+            [KeyboardButton(text=get_translation('buttons.survey', language))],
+            [KeyboardButton(text=get_translation('buttons.back', language))],
+        ],
+        resize_keyboard=True,
+        one_time_keyboard=True
+    )
+    return keyboard

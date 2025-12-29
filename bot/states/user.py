@@ -9,6 +9,7 @@ class UserStates(StatesGroup):
     language = State()
     menu = State()
     job_vacancies = State()
+    info = State()
     first_name = State()
     last_name = State()
     birth_date = State()
