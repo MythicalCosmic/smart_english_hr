@@ -1,8 +1,29 @@
 uz:
-  start_message: Salom! Iltimos, tilni tanlang:
+  start_message: Salom! Iltimos, tilni tanlang
+
+  buttons:
+    job_vacancies: Bo'sh ish o'rinlar
+    about: Haqida
+    feedback: Feedback
+    contacts: Aloqa
+    settings: Sozlamalar
 
 en:
-  start_message: Hello! Please choose a language:
+  start_message: Hello! Please choose a language
+
+  buttons:
+    job_vacancies: Job vacancies
+    about: About the Company
+    feedback: Feedback
+    contact: Contact
+    settings: Settings
 
 ru:
-  start_message: Привет! Пожалуйста, выберите язык:
+  start_message: Привет! Пожалуйста, выберите язык
+
+  buttons:
+    job_vacancies: Bo'sh ish o'rinlar
+    about: Haqida
+    feedback: Feedback
+    contacts: Aloqa
+    settings: Sozlamalar

@@ -1,8 +1,11 @@
 """
 Helper functions
 """
-from database.database import  get_session
+from typing import Optional
+
+from database.database import get_session
 from database.models.user import User
+
 
 def format_user_mention(user_id: int, name: str) -> str:
     """Format user mention for HTML"""
@@ -10,15 +13,22 @@ def format_user_mention(user_id: int, name: str) -> str:
 
 
 async def user_exists(user_id: int) -> bool:
-    """Check if a user exists in the database"""
     async for session in get_session():
         result = await session.get(User, user_id)
         return result is not None
-    return False
 
 
-async def add_user(user_id: int, name: str, first_name: str, last_name: str, username: str):
-    async with get_session() as session:
+async def add_user(
+    user_id: int,
+    first_name: Optional[str],
+    last_name: Optional[str],
+    username: Optional[str],
+):
+    async for session in get_session():
+        existing_user = await session.get(User, user_id)
+        if existing_user:
+            return  # user already exists
+
         user = User(
             id=user_id,
             first_name=first_name,
@@ -29,24 +39,38 @@ async def add_user(user_id: int, name: str, first_name: str, last_name: str, use
         await session.commit()
 
 
-async def get_user(user_id: int) -> User:
-    async with get_session() as session:
+async def get_user(user_id: int) -> Optional[User]:
+    async for session in get_session():
+        return await session.get(User, user_id)
+
+
+async def set_user_state(user_id: int, state: str) -> None:
+    async for session in get_session():
         user = await session.get(User, user_id)
-        return user
+        if not user:
+            return
 
-async def set_user_state(user_id: int, state: str):
-    async with get_session() as session:
+        user.state = state
+        await session.commit()
+
+
+async def get_user_state(user_id: int) -> Optional[str]:
+    async for session in get_session():
         user = await session.get(User, user_id)
-        if user:
-            user.state = state
-            await session.commit()
+        return user.state if user else None
 
-async def get_user_state(user_id: int) -> User:
-    async with get_session() as session:
+
+async def get_user_language(user_id: int) -> Optional[str]:
+    async for session in get_session():
         user = await session.get(User, user_id)
-        if user:
-            return user.state
+        return user.language if user else None
 
 
+async def set_user_language(user_id: int, language: str) -> None:
+    async for session in get_session():
+        user = await session.get(User, user_id)
+        if not user:
+            return
 
-
+        user.language = language
+        await session.commit()

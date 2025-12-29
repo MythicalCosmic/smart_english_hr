@@ -13,6 +13,7 @@ class User(Base):
     first_name = Column(String, nullable=False)
     last_name = Column(String, nullable=True)
     username = Column(String, unique=True, nullable=True)
+    language = Column(String, nullable=True)
     state = Column(String, default="idle")
     created_at = Column(DateTime, default=datetime.utcnow)
     updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)

@@ -5,14 +5,23 @@ Reply keyboards
 
 
 from aiogram.types import ReplyKeyboardMarkup, KeyboardButton
-from variables import english, uzbek, russian
 
-def get_main_reply_keyboard() -> ReplyKeyboardMarkup:
+from core.settings import get_translation
+from .variables import english, uzbek, russian
+
+def get_main_reply_keyboard(language: str = 'uz') -> ReplyKeyboardMarkup:
     """Get main reply keyboard"""
     keyboard = ReplyKeyboardMarkup(
         keyboard=[
-            [KeyboardButton(text="Option 1")],
-            [KeyboardButton(text="Option 2")]
+            [KeyboardButton(text=get_translation('buttons.job_vacancies', language))],
+            [
+                KeyboardButton(text=get_translation('buttons.about', language)),
+                KeyboardButton(text=get_translation('buttons.feedback', language))
+            ],
+            [
+                KeyboardButton(text=get_translation('buttons.contact', language)),
+                KeyboardButton(text=get_translation('buttons.settings', language))
+            ]
         ],
         resize_keyboard=True
     )
@@ -30,3 +39,4 @@ def get_language_selection_keyboard() -> ReplyKeyboardMarkup:
         resize_keyboard=True
     )
     return keyboard
+
